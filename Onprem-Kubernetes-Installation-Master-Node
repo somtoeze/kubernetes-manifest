@@ -118,13 +118,43 @@ Troubleshooting the Public ip cert issue with managed onprem master node cluster
 -----------------------------------------------------------------------------------
 1) kubectl -n kube-system get configmap kubeadm-config -o jsonpath='{.data.ClusterConfiguration}' > kubeadm-config.yaml
 
-2 ) edit the file ( kubeadm-config.yaml ) 
-`
+2 ) edit the file (kubeadm-config.yaml ) 
+nano kubeadm-config.yaml
+
+#put this there
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+
 apiServer:
   certSANs:
-  - "172.31.22.194"
-  - "YOUR_PUBLIC_IP"
-`
+    - "172.31.22.8"
+    - "3.88.231.168"
+
+caCertificateValidityPeriod: 87600h0m0s
+certificateValidityPeriod: 8760h0m0s
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+
+controllerManager: {}
+scheduler: {}
+dns: {}
+
+encryptionAlgorithm: RSA-2048
+
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+
+imageRepository: registry.k8s.io
+kubernetesVersion: v1.34.7
+
+networking:
+  dnsDomain: cluster.local
+  podSubnet: 10.0.0.0/16
+  serviceSubnet: 10.96.0.0/12
+
+proxy: {}
+
 
 3) remove the old cert what is linked to only the private ip
 sudo mv /etc/kubernetes/pki/apiserver.crt /etc/kubernetes/pki/apiserver.crt.old
